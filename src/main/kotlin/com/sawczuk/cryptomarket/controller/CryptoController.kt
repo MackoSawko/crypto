@@ -1,5 +1,6 @@
 package com.sawczuk.cryptomarket.controller
 
+import com.sawczuk.cryptomarket.CryptoFacade
 import com.sawczuk.cryptomarket.model.Custom_User
 import com.sawczuk.cryptomarket.model.Wallet
 import com.sawczuk.cryptomarket.repository.UserRepository
@@ -16,19 +17,16 @@ import java.util.Optional
 class CryptoController {
 
     @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var walletRepository: WalletRepository
+    lateinit var cryptoFacade: CryptoFacade
 
     @GetMapping("/users")
     fun getUser(): List<Custom_User>{
-        return userRepository.findAll()
+        return cryptoFacade.getUsers()
     }
 
     @GetMapping("/user/{id}")
     fun getUser(@PathVariable id:Long): Optional<Custom_User> {
-        return userRepository
+        return cryptoFacade
             .findById(id)
     }
 
@@ -39,10 +37,16 @@ class CryptoController {
         val wallet = Wallet(btc = 5.0, usd = 1250.0)
 
         val user = Custom_User(firstName = firstName, lastName = lastName, wallet = wallet)
-        userRepository.save(user)
+        cryptoFacade.save(user)
         return user
     }
 
+    @PostMapping("/user/{id}/sell/btc")
+    fun sellBtc(@PathVariable id: Long,
+               @RequestParam("amount") amount: Double): Wallet {
+        return cryptoFacade.sellBtc(id,amount
+        )
+    }
 
 
 }
